@@ -1,0 +1,14 @@
+# Configuration for /etc/init.d/wirelogd
+# Install to /etc/conf.d/wirelogd
+
+# User/group the daemon runs as.
+#command_user="wirelogd:wirelogd"
+
+# Path to the JSON configuration file.
+#wirelogd_config="/etc/wirelogd/config.json"
+
+# Where stdout/stderr are written (used when log_destination is "stdout").
+#wirelogd_logfile="/var/log/wirelogd/wirelogd.log"
+
+# Extra command-line flags, e.g. "-debug" or "-log-format text".
+#wirelogd_opts=""

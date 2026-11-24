@@ -1,0 +1,39 @@
+#!/sbin/openrc-run
+# OpenRC service script for wirelogd (Alpine Linux)
+# Install to /etc/init.d/wirelogd
+
+name="wirelogd"
+description="WireGuard Logging"
+
+: ${command_user:="wirelogd:wirelogd"}
+: ${wirelogd_config:="/etc/wirelogd/config.json"}
+: ${wirelogd_logfile:="/var/log/wirelogd/wirelogd.log"}
+
+command="/usr/local/sbin/wirelogd"
+command_args="-config ${wirelogd_config} ${wirelogd_opts}"
+supervisor="supervise-daemon"
+respawn_delay=5
+respawn_max=0
+
+# wgctrl talks to the kernel over netlink and needs CAP_NET_ADMIN.
+# Grant only that capability to the unprivileged user.
+capabilities="^cap_net_admin"
+
+# wirelogd logs to stdout by default; capture it to a file.
+output_log="${wirelogd_logfile}"
+error_log="${wirelogd_logfile}"
+
+depend() {
+	need net
+	after firewall wg-quick
+	use logger
+}
+
+start_pre() {
+	if [ ! -r "${wirelogd_config}" ]; then
+		eerror "Missing config file ${wirelogd_config}"
+		return 1
+	fi
+	checkpath --directory --owner "${command_user}" --mode 0755 "$(dirname "${wirelogd_logfile}")"
+	checkpath --file --owner "${command_user}" --mode 0644 "${wirelogd_logfile}"
+}
